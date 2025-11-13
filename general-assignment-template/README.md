@@ -29,3 +29,6 @@ uv run manage.py runserver
 uv run poe lint
 uv run poe format
 ```
+
+
+
