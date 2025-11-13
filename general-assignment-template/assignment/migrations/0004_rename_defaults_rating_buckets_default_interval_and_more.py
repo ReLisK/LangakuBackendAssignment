@@ -4,20 +4,19 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('assignment', '0003_alter_card_next_review'),
+        ("assignment", "0003_alter_card_next_review"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='rating_buckets',
-            old_name='defaults',
-            new_name='default_interval',
+            model_name="rating_buckets",
+            old_name="defaults",
+            new_name="default_interval",
         ),
         migrations.RenameField(
-            model_name='rating_buckets',
-            old_name='ratings',
-            new_name='score',
+            model_name="rating_buckets",
+            old_name="ratings",
+            new_name="score",
         ),
     ]

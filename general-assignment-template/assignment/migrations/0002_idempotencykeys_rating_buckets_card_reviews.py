@@ -7,46 +7,82 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('assignment', '0001_initial'),
+        ("assignment", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='IdempotencyKeys',
+            name="IdempotencyKeys",
             fields=[
-                ('key', models.CharField(primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
-                ('status_code', models.IntegerField()),
-                ('expires_at', models.DateTimeField()),
+                ("key", models.CharField(primary_key=True, serialize=False)),
+                ("created_at", models.DateTimeField(default=django.utils.timezone.now)),
+                ("status_code", models.IntegerField()),
+                ("expires_at", models.DateTimeField()),
             ],
         ),
         migrations.CreateModel(
-            name='Rating_Buckets',
+            name="Rating_Buckets",
             fields=[
-                ('ratings', models.IntegerField(primary_key=True, serialize=False)),
-                ('defaults', models.IntegerField()),
+                ("ratings", models.IntegerField(primary_key=True, serialize=False)),
+                ("defaults", models.IntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name='Card',
+            name="Card",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('front', models.CharField(max_length=100)),
-                ('back', models.CharField(max_length=100)),
-                ('continuous_recall', models.IntegerField(default=0)),
-                ('last_reviewed', models.DateTimeField(default=django.utils.timezone.now)),
-                ('next_review', models.DateTimeField(blank=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("front", models.CharField(max_length=100)),
+                ("back", models.CharField(max_length=100)),
+                ("continuous_recall", models.IntegerField(default=0)),
+                (
+                    "last_reviewed",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                ("next_review", models.DateTimeField(blank=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Reviews',
+            name="Reviews",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('card', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='assignment.card')),
-                ('ratings', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='assignment.rating_buckets')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "card",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="assignment.card",
+                    ),
+                ),
+                (
+                    "ratings",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="assignment.rating_buckets",
+                    ),
+                ),
             ],
         ),
     ]

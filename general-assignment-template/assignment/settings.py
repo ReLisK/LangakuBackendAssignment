@@ -74,21 +74,15 @@ WSGI_APPLICATION = "assignment.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
+# In production these would be in an environment config file or something and not stored in clear text of course.
 DATABASES = {
-    'default': {
-
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-
-        'NAME': 'FlashcardScheduler',
-
-        'USER': 'postgres',
-
-        'PASSWORD': 'password',
-
-        'HOST': 'localhost',
-
-        'PORT': '5433',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "FlashcardScheduler",
+        "USER": "postgres",
+        "PASSWORD": "password",
+        "HOST": "localhost",
+        "PORT": "5433",
     }
 }
 

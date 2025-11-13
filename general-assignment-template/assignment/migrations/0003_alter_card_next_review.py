@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('assignment', '0002_idempotencykeys_rating_buckets_card_reviews'),
+        ("assignment", "0002_idempotencykeys_rating_buckets_card_reviews"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='card',
-            name='next_review',
+            model_name="card",
+            name="next_review",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]
