@@ -29,3 +29,13 @@ uv run manage.py runserver
 uv run poe lint
 uv run poe format
 ```
+
+
+
+# In production these would be in an environment config file and not stored in clear text of course.
+postgresql DB 
+- user:     postgres
+- password: password
+superuser
+- user:    superuser
+- password password
