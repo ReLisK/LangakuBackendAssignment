@@ -2,7 +2,7 @@ import json
 import os
 from django.core.management.base import BaseCommand
 from assignment.models import User
-from assignment.models import Card, Rating_Buckets, Reviews
+from assignment.models import Card, Rating_Buckets, Reviews, IdempotencyKeys
 
 
 class Command(BaseCommand):
@@ -15,6 +15,7 @@ class Command(BaseCommand):
         User.objects.all().delete()
 
         # Delete old test data
+        IdempotencyKeys.objects.all().delete()
         Rating_Buckets.objects.all().delete()
         Card.objects.all().delete()
         Reviews.objects.all().delete()
@@ -57,7 +58,7 @@ class Command(BaseCommand):
                 )
 
             self.stdout.write(
-                self.style.SUCCESS("Mock data successfully loaded to database")
+                self.style.SUCCESS(f"Mock data successfully loaded to database \nYou can use test UserId: {user.id}, for due_cards API call.\nHere are a list of card IDs: {Card.objects.values_list('id')}\nRating scores are 0, 1, 2 as outlined in requirements\nPlease remember POST call to reviews requires header X-IDEMPOTENCY-KEY to be set.")
             )
 
         except Exception as e:

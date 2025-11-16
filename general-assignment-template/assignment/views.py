@@ -2,15 +2,14 @@ from rest_framework import status, viewsets, mixins
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from django.core.management import call_command
-from assignment.models import Reviews
-from assignment.serializers import ReviewsSerializer
+from assignment.models import Reviews, User, Card
+from assignment.serializers import ReviewsSerializer, UserSerializer, CardSerializer
 from django.utils import timezone
-from datetime import timedelta
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
+from django.shortcuts import get_object_or_404
+from assignment.permissions import IdempotencyPermission
 
-
-# Time Zone
-jst_tz = ZoneInfo("Japan")
 
 
 @api_view(["POST"])
@@ -35,6 +34,8 @@ class UserViewSet(viewsets.ViewSet):
     """
     ViewSet for user-related operations.
     """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
     @action(detail=False, methods=["get"])
     def me(self, request):
@@ -49,6 +50,29 @@ class UserViewSet(viewsets.ViewSet):
             return Response(
                 {"error": "User not authenticated"}, status=status.HTTP_401_UNAUTHORIZED
             )
+ 
+    @action(detail=True, methods=['get'])
+    def due_cards(self, request, pk=None):
+        """
+        ViewSet that lists all cards related to a specific user, where the next_review date is lte the until parameter.
+        """
+        until_date_str = request.query_params.get('until', None)
+        if until_date_str:
+            try:
+                until_date = datetime.fromisoformat(until_date_str)
+            except ValueError:
+                return Response({"error": "Invalid ISO8601 date format."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(
+                {"error": "'until' query parameter is required (ISO8601 datetime)."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        # pk is the user ID from the URL
+        user = get_object_or_404(User, pk=pk)
+        # Not having a next_review date means the card has never been seen before so it doesnt get listed out i think thats fine.   
+        user_cards_queryset = Card.objects.filter(user=user, next_review__lte=until_date)
+        serializer = CardSerializer(user_cards_queryset, many=True)
+        return Response(serializer.data)
 
 
 class ReviewsViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -58,6 +82,8 @@ class ReviewsViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     queryset = Reviews.objects.all()
     serializer_class = ReviewsSerializer
+    permission_classes = [IdempotencyPermission]
+    authentication_classes = []
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -83,10 +109,10 @@ class ReviewsViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             )
         reviewCard.save()
 
-        # convert to JST
+        # converting next review date to JST using serializer
+        nxtReviewDate = CardSerializer(reviewCard).data['next_review']
         response = {
-            "next_review": reviewCard.next_review,
-            "next_review_JST": reviewCard.next_review.astimezone(jst_tz),
+            "next_review": nxtReviewDate,
         }
 
         return Response(response, status=status.HTTP_201_CREATED)
