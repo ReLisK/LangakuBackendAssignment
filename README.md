@@ -2,9 +2,9 @@
 
 ## Algorithm Explanation
 I initially built a more straightforward/simple algorithm that set an initial interval for each of the possible 3 ratings:
--Rating 0 (Again) - Interval of 1 minute
--Rating 1 (Hard) - Interval of 3 days
--Rating 2 (Easy) - Interval of 5 days
+- Rating 0 (Again) - Interval of 1 minute
+- Rating 1 (Hard) - Interval of 3 days
+- Rating 2 (Easy) - Interval of 5 days
 
 The application would track how many times you have seen the card: continuos_days and use this to multiply the initial intervals to get your new Interval.
 Selecting Again would reset continous days to 0, i.e interval falls back to 1 minute. This algorithm works but would not provide the best experience as it 
