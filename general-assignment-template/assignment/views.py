@@ -94,6 +94,7 @@ class ReviewsViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         self.perform_create(serializer)
 
         reviewCard = serializer.validated_data.get("card")
+        # convert to JST
         nxtReviewDate = CardSerializer(reviewCard).data["next_review"]
         response = {
             "next_review": nxtReviewDate,
