@@ -4,12 +4,9 @@ from rest_framework.response import Response
 from django.core.management import call_command
 from assignment.models import Reviews, User, Card
 from assignment.serializers import ReviewsSerializer, UserSerializer, CardSerializer
-from django.utils import timezone
-from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
+from datetime import datetime
 from django.shortcuts import get_object_or_404
 from assignment.permissions import IdempotencyPermission
-
 
 
 @api_view(["POST"])
@@ -21,7 +18,7 @@ def initialize_data(request):
 
         return Response(
             {
-                "message": "Database Initialized successfully: RatingBuckets have been setup and cards assigned to user 'testuser'"
+                "message": "Database Initialized successfully and cards assigned to user 'testuser'"
             },
             status=status.HTTP_200_OK,
         )
@@ -34,6 +31,7 @@ class UserViewSet(viewsets.ViewSet):
     """
     ViewSet for user-related operations.
     """
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -50,18 +48,21 @@ class UserViewSet(viewsets.ViewSet):
             return Response(
                 {"error": "User not authenticated"}, status=status.HTTP_401_UNAUTHORIZED
             )
- 
-    @action(detail=True, methods=['get'])
+
+    @action(detail=True, methods=["get"])
     def due_cards(self, request, pk=None):
         """
         ViewSet that lists all cards related to a specific user, where the next_review date is lte the until parameter.
         """
-        until_date_str = request.query_params.get('until', None)
+        until_date_str = request.query_params.get("until", None)
         if until_date_str:
             try:
                 until_date = datetime.fromisoformat(until_date_str)
             except ValueError:
-                return Response({"error": "Invalid ISO8601 date format."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"error": "Invalid ISO8601 date format."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         else:
             return Response(
                 {"error": "'until' query parameter is required (ISO8601 datetime)."},
@@ -69,8 +70,10 @@ class UserViewSet(viewsets.ViewSet):
             )
         # pk is the user ID from the URL
         user = get_object_or_404(User, pk=pk)
-        # Not having a next_review date means the card has never been seen before so it doesnt get listed out i think thats fine.   
-        user_cards_queryset = Card.objects.filter(user=user, next_review__lte=until_date)
+        # Not having a next_review date means the card has never been seen before so it doesnt get listed out i think thats fine.
+        user_cards_queryset = Card.objects.filter(
+            user=user, next_review__lte=until_date
+        )
         serializer = CardSerializer(user_cards_queryset, many=True)
         return Response(serializer.data)
 
@@ -91,26 +94,7 @@ class ReviewsViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         self.perform_create(serializer)
 
         reviewCard = serializer.validated_data.get("card")
-        rating = serializer.validated_data.get("ratings")
-        defaultInterval = rating.default_interval
-        time_delta = timedelta(minutes=defaultInterval)
-
-        reviewCard.last_reviewed = timezone.now()
-        reviewCard.save()
-
-        if rating.score == 0:
-            reviewCard.next_review = reviewCard.last_reviewed + time_delta
-            reviewCard.continuous_recall = 0
-        else:
-            # if they got it right we want to incrementally keep increasing the addtional review time_delta by multiplying by continuous_recall
-            reviewCard.continuous_recall += 1
-            reviewCard.next_review = reviewCard.last_reviewed + (
-                time_delta * reviewCard.continuous_recall
-            )
-        reviewCard.save()
-
-        # converting next review date to JST using serializer
-        nxtReviewDate = CardSerializer(reviewCard).data['next_review']
+        nxtReviewDate = CardSerializer(reviewCard).data["next_review"]
         response = {
             "next_review": nxtReviewDate,
         }
