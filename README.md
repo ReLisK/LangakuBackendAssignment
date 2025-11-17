@@ -1,6 +1,6 @@
 # Mantra Backend Engineer Assignment
 
-## Algorithm Explanation
+## Flashcard Scheduling Algorithm Explanation
 I initially built a more straightforward/simple algorithm that set an initial interval for each of the possible 3 ratings:
 - Rating 0 (Again) - Interval of 1 minute
 - Rating 1 (Hard) - Interval of 3 days
