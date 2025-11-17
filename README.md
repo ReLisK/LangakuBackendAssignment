@@ -26,21 +26,27 @@ There are 4 key terms for this algorithm
 selects Easy for a card that is in the **reviewing stage**. Nb ease cannot fall below 1.3.
 
 Using these terms I can then use some examples to explain how the algorithm works, See what happens in the algorithm for the sequence of ratings below:
-*brand new unseen card*
+
+*For a brand new unseen card*
 
 - Again
+
 Interval is 1 minute and ease/step/state is unchanged.
 
 - Hard
+
 Step is increased to 1 and a default interval of 6 minutes is applied. Ease and state are still unchanged.
 
 - Hard
+
 Since Step is now 1 the card state changes it Reviewing and a default interval of 1 day is applied. Ease is still unchanged (remember it only changes in reviewing state)
 
 - Hard
+
 As the card is in the Reviewing state the **Ease is reduced by 0.15** (User finds this card difficult and as such should see it sooner). 
 
 - Easy
+
 As the card is in the Reviewing state the **Ease is increased by 0.15** (User finds this card easy and as such doesnt need to see it quickly). 
 
 - Again
