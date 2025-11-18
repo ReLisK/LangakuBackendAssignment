@@ -68,13 +68,13 @@ class Card(models.Model):
                     self.state = "reviewing"
                     self.interval = timedelta(days=1)
             case "reviewing":
+                # Set new interval, note we don't use ease in this calculation as it was still answered as hard.
+                # But we do multiply by a bias 1.2 so that the user doesnt get hard stuck at the same interval.
+                self.interval = self.interval * self.HARDBIAS
                 # Modify ease negatively as it was still hard.
                 self.ease -= 0.15
                 # Dont let ease fall below 1.3
                 self.ease = max(self.MIN_EASE, self.ease)
-                # Set new interval, note we don't use ease in this calculation as it was still answered as hard.
-                # But we do multiply by a bias 1.2 so that the user doesnt get hard stuck at the same interval.
-                self.interval = self.interval * self.HARDBIAS
             case "relearning":
                 self.interval = timedelta(days=1)
 
@@ -92,10 +92,10 @@ class Card(models.Model):
                     self.interval = timedelta(days=3)
                 self.state = "reviewing"
             case "reviewing":
-                # Modify ease positively as it was still easy.
-                self.ease += 0.15
                 # Use ease as a multiple to increase interval.
                 self.interval = self.interval * self.EASYBIAS * self.ease
+                # Modify ease positively as it was still easy.
+                self.ease += 0.15
             case "relearning":
                 self.state = "reviewing"
                 self.interval = timedelta(days=4)
