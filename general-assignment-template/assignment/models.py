@@ -21,6 +21,7 @@ class User(AbstractUser):
 class Card(models.Model):
     HARDBIAS = 1.2
     EASYBIAS = 1.2
+    MIN_EASE = 1.3
 
     class STATES(models.TextChoices):
         LEARNING = "learning", "Learning"
@@ -50,7 +51,7 @@ class Card(models.Model):
             case "reviewing":
                 self.state = "relearning"
                 # when Again is selected we modify the ease by minus 0.2.
-                self.ease = max(1.3, self.ease - 0.2)
+                self.ease = max(self.MIN_EASE, self.ease - 0.2)
             case "relearning":
                 pass
 
@@ -68,10 +69,9 @@ class Card(models.Model):
                     self.interval = timedelta(days=1)
             case "reviewing":
                 # Modify ease negatively as it was still hard.
-                # SM2 formula: self.ease += 0.1 - (5 - sm2Score) * (0.08 + (5 - sm2Score) * 0.02)
                 self.ease -= 0.15
                 # Dont let ease fall below 1.3
-                self.ease = max(1.3, self.ease)
+                self.ease = max(self.MIN_EASE, self.ease)
                 # Set new interval, note we don't use ease in this calculation as it was still answered as hard.
                 # But we do multiply by a bias 1.2 so that the user doesnt get hard stuck at the same interval.
                 self.interval = self.interval * self.HARDBIAS
