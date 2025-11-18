@@ -13,7 +13,7 @@ doesnt capture and adapt to how *difficult* a user found a card; especially in t
 I then did some research and learnt about the SM2 algorithm and decided that was a better way to handle this problem as it provides multiple ways of addressing
 difficulty. The key one being **Ease**, when this is adjusted up or down it affects the length of an interval when a user selects an Easy rating for a card. 
 
-I adapted this main idea and modified it for our algorithm here to ffit our 3 rating system (where SM2 has five) along with some other slight changes.
+I adapted this main idea and modified it for our algorithm here to fit our 3 rating system (where SM2 has five) along with some other slight changes.
 
 ### There are 4 key terms for this algorithm
 
@@ -66,13 +66,20 @@ Two things to note:
 - Only Easy moves a card from Relearning back to the Reviewing state.
 - If a user select Easy for a brand new card, it immediately goes to Reviewing state and assigns a interval of 3 or 4 days.
 
-
+## Functional Rules
+1. Immediate Retry - This is built in; a rating of 0 always sets the interval to 1 minute.
+2. Spacing Logic
+   - A rating of 2 on first time seeing a card gives the longest initial interval of 4 days.
+   - A rating of 1 always results in a interval somewhere between 0 and 2. This is because a rating of 2 is multiplied by ease, whilst 0 always sets interval to 1.
+3. Monotonic Intervals - Subsequent correct answers (1 or 2) can never shorten the interval.
 
 ## Initial Setup
 
 - uv is recommended for managing virtual environments.
 
 Install postgressql and create db.
+
+git clone the application to your machine.
 
 Modify settings file by including new db user and password eg:
 
@@ -90,8 +97,6 @@ DATABASES = {
 }
 ```
 
-git clone the application to your machine.
-
 cd to the application location. e.g. cd ./application_location/general-assignment-template/
 
 run
@@ -106,6 +111,7 @@ uv run manage.py migrate
 ## Testing application
 
 - You can use your preferred API tester, I use an application called postman.
+- To view API spec go to http://127.0.0.1:8000/api/schema/swagger-ui/#/
 
 run
 ```
