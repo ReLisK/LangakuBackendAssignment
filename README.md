@@ -50,7 +50,7 @@ Using these terms I can then use some examples to explain how the algorithm work
 
    - User finds this card difficult and as such it should appear sooner.
    - interval = previous_interval * HARDBIAS (1 day * 1.2 = 1.2days)
-   - As the card is in the Reviewing state the **Ease is reduced by 0.15** : (2.5 - 0.15) = 2.35
+   - As the card is in the Reviewing state the **Ease is reduced by 0.15** : (2.5 - 0.15 = 2.35)
 
 5. Easy
 
