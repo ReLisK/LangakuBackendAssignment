@@ -18,7 +18,7 @@ def initialize_data(request):
 
         return Response(
             {
-                "message": "Database Initialized successfully and cards assigned to user 'testuser'"
+                "message": "Database Initialized successfully and cards assigned to the user 'testuser'"
             },
             status=status.HTTP_200_OK,
         )
